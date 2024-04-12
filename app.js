@@ -3,9 +3,28 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 const connectDB = require('./config/database');
 const routes = require('./routes/router');
+const session = require('express-session');
+
 app.set('view engine', 'ejs');
+
+const crypto = require('crypto');
+
+// Generate a random secret key
+const generateSecretKey = () => {
+  return crypto.randomBytes(64).toString('hex');
+};
+
+
+// Set up session middleware
+app.use(session({
+    secret: generateSecretKey(), // Change this to a random secret
+    resave: false,
+    saveUninitialized: false
+  }));
 
 // Define the root folder path
 const rootPath = __dirname;
@@ -26,6 +45,15 @@ app.use(express.json());
 // Use routes
 app.use('/', routes);
 
+io.on('connection', (socket) => {
+    console.log('user connected');
+    socket.on('disconnect', function () {
+        console.log('user disconnected');
+    });
+})
+
 // Listen on a port
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+server.listen(port, function () {
+    console.log(`Listening on port ${port}`);
+});
