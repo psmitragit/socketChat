@@ -1,10 +1,12 @@
-// models/User.js
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const UserSchema = new mongoose.Schema({
-  name: {
+// Define User schema
+const UserSchema = new Schema({
+  username: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   email: {
     type: String,
@@ -15,10 +17,23 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  date: {
+  created_at: {
+    type: Date,
+    default: Date.now
+  },
+  updated_at: {
     type: Date,
     default: Date.now
   }
 });
 
-module.exports = User = mongoose.model('user', UserSchema);
+// Middleware to update 'updated_at' field before saving
+UserSchema.pre('save', function(next) {
+  this.updated_at = new Date();
+  next();
+});
+
+// Create User model
+const User = mongoose.model('User', UserSchema);
+
+module.exports = User;
