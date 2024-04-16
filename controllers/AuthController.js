@@ -20,7 +20,8 @@ class AuthController {
     // User authenticated
     // Save user information in the session
     req.session.user = user;
-    res.json({ message: 'Login successful' });
+    // res.json({ message: 'Login successful' });
+    res.redirect('/chat');
   }
   async saveUser(req, res) {
     try {

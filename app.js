@@ -8,6 +8,7 @@ const io = require('socket.io')(server);
 const connectDB = require('./config/database');
 const routes = require('./routes/router');
 const session = require('express-session');
+const chatController = require('./controllers/ChatController');
 
 app.set('view engine', 'ejs');
 
@@ -45,12 +46,18 @@ app.use(express.json());
 // Use routes
 app.use('/', routes);
 
+// Socket.IO event handlers
 io.on('connection', (socket) => {
-    console.log('user connected');
-    socket.on('disconnect', function () {
-        console.log('user disconnected');
-    });
-})
+  console.log('A user connected');
+
+  // Handle chat message event
+  socket.on('chat message', chatController.handleChatMessage(io));
+
+  // Handle disconnection
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
 
 // Listen on a port
 const port = process.env.PORT || 3000;
