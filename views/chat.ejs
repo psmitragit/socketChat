@@ -4,49 +4,48 @@
   <head>
     <meta charset="UTF-8" />
     <title>Chat</title>
+    <link rel="stylesheet" href="/css/style.css" />
     <script src="/socket.io/socket.io.js"></script>
-    <style>
-      #messages {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
-      }
-      #messages li {
-        padding: 5px 10px;
-        background: #f1f1f1;
-        margin-bottom: 5px;
-        border-radius: 5px;
-      }
-    </style>
+    <script src="/js/app.js"></script>
   </head>
   <body>
-    <h1>Chat</h1>
-    <ul id="messages"></ul>
-    <form id="chatForm">
-      <input type="text" id="messageInput" autocomplete="off" />
-      <button type="submit">Send</button>
-    </form>
-    <script>
-      const socket = io();
-      const username = "<%= user.username %>"; // Assuming you have access to the username in your view
-      // Function to send message
-      document
-        .getElementById("chatForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
-          const message = document.getElementById("messageInput").value;
-          const data = { message, username }; // Include username with the message.
-          socket.emit("chat message", data);
-          document.getElementById("messageInput").value = "";
-        });
-
-      // Function to display received message
-      socket.on("chat message", async function (data) {
-        const messages = document.getElementById("messages");
-        const li = document.createElement("li");
-        li.textContent = `${data.username}: ${data.message}`; // Display username with the message
-        messages.appendChild(li);
-      });
-    </script>
+    <div class="container">
+      <h1>Chat</h1>
+      <ul id="messages">
+        <% chatHistory.forEach(message => { %>
+        <li><%= message.username %>: <%= message.message %></li>
+        <% }); %>
+      </ul>
+      <form id="chatForm">
+        <input
+          type="text"
+          id="messageInput"
+          autocomplete="off"
+          placeholder="Type your message..."
+        />
+        <button type="submit">Send</button>
+      </form>
+    </div>
   </body>
+  <script>
+    const socket = io();
+    const username = "<%= user.username %>";
+    document
+      .getElementById("chatForm")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+        const message = document.getElementById("messageInput").value;
+        const data = { message, username }; // Include username with the message.
+        socket.emit("chat message", data);
+        document.getElementById("messageInput").value = "";
+      });
+
+    // Function to display received message
+    socket.on("chat message", async function (data) {
+      const messages = document.getElementById("messages");
+      const li = document.createElement("li");
+      li.textContent = `${data.username}: ${data.message}`; // Display username with the message
+      messages.appendChild(li);
+    });
+  </script>
 </html>

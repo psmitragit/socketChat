@@ -6,7 +6,8 @@ const authMiddleware = (req, res, next) => {
       next();
     } else {
       // User is not logged in, redirect to login page or send 401 Unauthorized status
-      res.status(401).json({ message: 'Unauthorized' });
+      // res.status(401).json({ message: 'Unauthorized' });
+      res.redirect('/');
     }
   };
   

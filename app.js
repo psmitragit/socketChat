@@ -22,10 +22,10 @@ const generateSecretKey = () => {
 
 // Set up session middleware
 app.use(session({
-    secret: generateSecretKey(), // Change this to a random secret
-    resave: false,
-    saveUninitialized: false
-  }));
+  secret: generateSecretKey(), // Change this to a random secret
+  resave: false,
+  saveUninitialized: false
+}));
 
 // Define the root folder path
 const rootPath = __dirname;
@@ -33,6 +33,8 @@ const rootPath = __dirname;
 // For serving static assets
 
 app.use('/modules', express.static(rootPath + '/node_modules'));
+app.use('/css', express.static(rootPath + '/public/css'));
+app.use('/js', express.static(rootPath + '/public/js'));
 
 //Connect DB
 connectDB();
@@ -59,8 +61,9 @@ io.on('connection', (socket) => {
   });
 });
 
-// Listen on a port
-const port = process.env.PORT || 3000;
-server.listen(port, function () {
-    console.log(`Listening on port ${port}`);
+const port = 5000;
+const host = '192.168.0.117';
+
+server.listen(port, host, function () {
+  console.log(`Application running on http://${host}:${port}`);
 });
