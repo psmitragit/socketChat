@@ -13,6 +13,8 @@
     <form action="/register" method="POST">
       <label for="username">Username:</label><br />
       <input type="text" id="username" name="username" required /><br /><br />
+      <label for="username">Color:</label><br />
+      <input type="text" id="color" name="color" required /><br /><br />
       <label for="email">Email:</label><br />
       <input type="email" id="email" name="email" required /><br /><br />
       <label for="password">Password:</label><br />
@@ -35,7 +37,7 @@
         </thead>
         <tbody>
           <% data.forEach(function(user) { %>
-          <tr>
+          <tr style="background-color: <%= user.color %>;">
             <td><%= user.username %></td>
             <td><%= user.email %></td>
             <td><%= user.created_at %></td>

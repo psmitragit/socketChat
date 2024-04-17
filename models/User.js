@@ -14,6 +14,10 @@ const UserSchema = new Schema({
     required: true,
     unique: true
   },
+  color: {
+    type: String,
+    required: true,
+  },
   hashedPassword: {
     type: String,
     required: true
@@ -29,13 +33,13 @@ const UserSchema = new Schema({
 });
 
 // Middleware to update 'updated_at' field before saving
-UserSchema.pre('save', function(next) {
+UserSchema.pre('save', function (next) {
   this.updated_at = new Date();
   next();
 });
 
 // Method to compare passwords
-UserSchema.methods.comparePassword = async function(candidatePassword) {
+UserSchema.methods.comparePassword = async function (candidatePassword) {
   try {
     return await bcrypt.compare(candidatePassword, this.hashedPassword);
   } catch (error) {

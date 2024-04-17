@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 const chatMessageSchema = new mongoose.Schema({
-  username: { type: String, required: true },
+  username: { type: String, required: true, ref: 'User' },
   message: { type: String, required: true },
   timestamp: { type: Date, default: Date.now }
 });

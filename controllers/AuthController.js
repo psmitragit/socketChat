@@ -25,9 +25,9 @@ class AuthController {
   }
   async saveUser(req, res) {
     try {
-      const { username, email, password } = req.body;
+      const { username, email, password, color } = req.body;
       const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = new User({ username, email, hashedPassword });
+      const newUser = new User({ username, email, hashedPassword, color });
       const savedUser = await newUser.save();
       res.redirect('/about');
     } catch (err) {

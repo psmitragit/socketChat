@@ -5,7 +5,9 @@ class ChatController {
   getChatHistory = async () => {
     try {
       // Retrieve chat messages from the database (sorted by timestamp)
-      return await ChatMessage.find().sort({ timestamp: 1 });
+      const res = await ChatMessage.find().sort({ timestamp: 1 });
+      console.log(res);
+      return res;
     } catch (err) {
       console.error('Error fetching chat history:', err);
       return [];
