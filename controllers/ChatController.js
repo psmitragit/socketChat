@@ -1,11 +1,12 @@
 // controllers/chatController.js
 const ChatMessage = require('../models/ChatMessage.js');
+const User = require('../models/User.js');
 class ChatController {
   // Fetch chat history from the database
   getChatHistory = async () => {
     try {
       // Retrieve chat messages from the database (sorted by timestamp)
-      const res = await ChatMessage.find().sort({ timestamp: 1 });
+      const res = await ChatMessage.find().sort({ timestamp: 1 }).populate('username');
       console.log(res);
       return res;
     } catch (err) {
@@ -24,8 +25,9 @@ class ChatController {
     return async (msg) => {
       // Extract message data
       const { username, message } = msg;
+      const user = await User.findOne({ username });
       // Save the message to the database
-      const newMessage = new ChatMessage({ username, message });
+      const newMessage = new ChatMessage({ username: user._id, message });
       await newMessage.save();
 
       try {

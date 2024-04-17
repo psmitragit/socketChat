@@ -9,12 +9,22 @@
     <script src="/js/app.js"></script>
   </head>
   <body>
-    <div class="chat-container">
+    <div
+      class="chat-container"
+      id="myElement"
+      data-username="<%= user.username %>"
+    >
       <h1>Chat</h1>
       <div class="chat-content" id="chatContainer">
         <ul id="messages">
           <% chatHistory.forEach(message => { %>
-          <li><%= message.username %>: <%= message.message %></li>
+          <li
+            class="<%= message.username.username === user.username ? 'right' : '' %>"
+          >
+            <% if (message.username.username !== user.username) { %>
+            <span class="username-box"><%= message.username.username %></span>
+            <% } %> <%= message.message %>
+          </li>
           <% }); %>
         </ul>
       </div>
@@ -32,7 +42,7 @@
   <script>
     const socket = io();
     const username = "<%= user.username %>";
-    const chatContainer = document.getElementById('chatContainer');
+    const chatContainer = document.getElementById("chatContainer");
 
     document
       .getElementById("chatForm")
@@ -46,15 +56,63 @@
       });
 
     // Function to display received message
+
     socket.on("chat message", async function (data) {
       const messages = document.getElementById("messages");
       const li = document.createElement("li");
-      li.textContent = `${data.username}: ${data.message}`; // Display username with the message
-      messages.appendChild(li);
-      scrollToBottom();
+
+      var element = document.getElementById("myElement");
+      var dataValue = element.dataset.username;
+
+      // Create a span element for the username
+      const usernameSpan = document.createElement("span");
+      usernameSpan.textContent = data.username;
+      usernameSpan.classList.add("username-box"); // Apply the username box style
+
+      // If the message is from the current user, only display the message content
+      if (dataValue === data.username) {
+        li.textContent = data.message;
+        li.classList.add("right");
+      } else {
+        // If the message is from another user, display username and message content
+        li.appendChild(usernameSpan);
+        li.innerHTML += `: ${data.message}`;
+      }
+
+      // Send a notification to the browser tab
+      if (!document.hasFocus()) {
+        // Check if the tab is not focused
+        sendNotification(data.username, data.message); // Call the function to send notification
+      }
+
+      messages.appendChild(li); // Append the list item to the messages list
+      scrollToBottom(); // Assuming scrollToBottom is a function defined elsewhere
     });
+
     function scrollToBottom() {
       chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    // Function to send a notification to the browser tab
+    function sendNotification(username, message) {
+      // Check if the Notification API is supported by the browser
+      if (!("Notification" in window)) {
+        console.error("This browser does not support desktop notification");
+        return;
+      }
+
+      // Request permission to display notifications
+      Notification.requestPermission().then(function (permission) {
+        if (permission === "granted") {
+          // Create and display the notification
+          var notification = new Notification(`${username} sent a message`, {
+            body: message,
+            icon: "path/to/your/icon.png", // Replace with the path to your icon
+          });
+
+          // Close the notification after a certain duration
+          setTimeout(notification.close.bind(notification), 5000);
+        }
+      });
     }
   </script>
 </html>
